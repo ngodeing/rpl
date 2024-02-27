@@ -42,4 +42,17 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    protected $attributes = [
+        'email' => '', // Set default email value here
+        'password' => '',
+    ];
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            // Generate a unique email address based on the current date and time
+            $user->email = 'user_' . now()->format('YmdHis') . '@example.com';
+        });
+    }
 }
