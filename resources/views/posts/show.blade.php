@@ -44,7 +44,7 @@
                                 </form>
                                 
                                 <!-- Delete Comment Form -->
-                                <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" class="d-inline">
+                                <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this comment?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger">Delete</button>
