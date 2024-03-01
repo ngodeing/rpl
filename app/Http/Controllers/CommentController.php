@@ -42,4 +42,22 @@ class CommentController extends Controller
         // Redirect ke halaman post dengan pesan sukses
         return redirect()->route('posts.show', $comment->post_id)->with('success', 'Comment added successfully.');
     }
+    public function update(Request $request, Comment $comment)
+    {
+        $request->validate([
+            'content' => 'required|string',
+        ]);
+
+        $comment->content = $request->content;
+        $comment->save();
+
+        return redirect()->back()->with('success', 'Comment updated successfully.');
+    }
+
+    public function destroy(Comment $comment)
+    {
+        $comment->delete();
+
+        return redirect()->back()->with('success', 'Comment deleted successfully.');
+    }
 }

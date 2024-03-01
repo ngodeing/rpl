@@ -20,7 +20,12 @@
 
                             <div class="form-group">
                                 <label class="font-weight-bold">GAMBAR</label>
-                                <input type="file" class="form-control" name="image">
+                                <input type="text" class="form-control @error('image-link') is-invalid @enderror" name="image" placeholder="Masukkan Link Gambar" value="{{ old('image', $post->image)}}">
+                                @error('image')
+                                <div class="alert alert-danger mt-2">
+                                    {{ $message }}
+                                </div>
+                                @enderror
                             </div>
 
                             <div class="form-group">

@@ -52,18 +52,17 @@ class PostController extends Controller
     {
         //validate form
         $this->validate($request, [
-            'image' => 'required|image|mimes:jpeg,jpg,png|max:2048',
+            'image' => 'required',
             'title' => 'required|min:5',
             'description' => 'required|min:10'
         ]);
 
         //upload image
-        $image = $request->file('image');
-        $image->storeAs('public/posts', $image->hashName());
+        
 
         //create post
         Post::create([
-            'image' => $image->hashName(),
+            'image' => $request->image,
             'title' => $request->title,
             'description' => $request->description
         ]);
@@ -112,7 +111,7 @@ class PostController extends Controller
     {
         //validate form
         $this->validate($request, [
-            'image' => 'image|mimes:jpeg,jpg,png|max:2048',
+            'image' => 'required',
             'title' => 'required|min:5',
             'description' => 'required|min:10'
         ]);
@@ -123,16 +122,10 @@ class PostController extends Controller
         //check if image is uploaded
         if ($request->hasFile('image')) {
 
-            //upload new image
-            $image = $request->file('image');
-            $image->storeAs('public/posts', $image->hashName());
-
-            //delete old image
-            Storage::delete('public/posts/' . $post->image);
 
             //update post with new image
             $post->update([
-                'image' => $image->hashName(),
+                'image' => $request->image,
                 'title' => $request->title,
                 'description' => $request->description
             ]);
@@ -160,9 +153,6 @@ class PostController extends Controller
     {
         //get post by ID
         $post = Post::findOrFail($id);
-
-        //delete image
-        Storage::delete('public/posts/' . $post->image);
 
         //delete post
         $post->delete();

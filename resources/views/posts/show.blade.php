@@ -14,20 +14,45 @@
         <div class="col-md-8">
             <div class="card border-0 shadow-sm rounded">
                 <div class="card-body">
-                    <img src="{{ asset('storage/posts/'.$post->image) }}" class="w-100 rounded">
+                    <img src="{{$post->image}}"class="w-100 rounded">
                     <hr>
                     <h4>{{ $post->title }}</h4>
                     <p class="mt-3">{!! $post->description !!}</p>
                     <hr>
                     <h5>Comments</h5>
                     @foreach($post->comments as $comment)
-                        <div class="card mb-2">
-                            <div class="card-body">
-                                <p>{{ $comment->content }}</p>
-                                <small>Posted by: {{ $comment->user->name }}</small>
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <p>{{ $comment->content }}</p>
+                            <small>Posted by: {{ $comment->user->name }}</small>
+                            <small class="text-muted"><br> Dibuat: {{ $comment->created_at->format('Y-m-d H:i:s') }}</small>
+                            @if($comment->created_at != $comment->updated_at)
+                                <small class="text-muted"><br> Diperbarui: {{ $comment->updated_at->format('Y-m-d H:i:s') }}</small>
+                            @endif
+                            <div class="mt-2">
+                                <!-- Edit Comment Form -->
+                                <button type="button" class="btn btn-sm btn-primary" onclick="toggleUpdateForm()">Update</button>
+
+                                <form id="updateForm" action="{{ route('comments.update', $comment->id) }}" method="POST" class="d-none">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="form-group">
+                                        <textarea class="form-control" name="content" rows="2" required>{{ $comment->content }}</textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                    <button type="button" class="btn btn-sm btn-secondary ml-2" onclick="toggleUpdateForm()">Cancel</button>
+                                </form>
+                                
+                                <!-- Delete Comment Form -->
+                                <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
                             </div>
                         </div>
-                    @endforeach
+                    </div>
+                @endforeach
                 </div>
             </div>
         </div>
@@ -54,6 +79,7 @@
                         
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
+                    
                 </div>
             </div>
         </div>
@@ -62,5 +88,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.ckeditor.com/4.13.1/standard/ckeditor.js"></script>
+<script>
+    function toggleUpdateForm() {
+        const updateForm = document.getElementById('updateForm');
+        updateForm.classList.toggle('d-none');
+    }
+</script>
 </body>
 </html>
