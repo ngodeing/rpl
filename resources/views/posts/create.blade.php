@@ -20,7 +20,7 @@
 
                             <div class="form-group">
                                 <label class="font-weight-bold">GAMBAR</label>
-                                <input type="text" class="form-control @error('image') is-invalid @enderror" name="image" placeholder="Masukkan Link Gambar">
+                                <input type="file" class="form-control @error('image') is-invalid @enderror" name="image">
                             
                                 <!-- error message untuk title -->
                                 @error('image')

@@ -2,22 +2,14 @@
 
 namespace App\Http\Controllers;
 
-//import Model "Post
 use App\Models\Post;
-
-//return type View
+use Illuminate\Http\Request;
 use Illuminate\View\View;
-
-//return type redirectResponse
 use Illuminate\Http\RedirectResponse;
-
-//import Facade "Storage"
 use Illuminate\Support\Facades\Storage;
 
-use Illuminate\Http\Request;
-
 class PostController extends Controller
-{
+{    
     /**
      * index
      *
@@ -41,7 +33,7 @@ class PostController extends Controller
     {
         return view('posts.create');
     }
-
+ 
     /**
      * store
      *
@@ -52,25 +44,26 @@ class PostController extends Controller
     {
         //validate form
         $this->validate($request, [
-            'image' => 'required',
-            'title' => 'required|min:5',
-            'description' => 'required|min:10'
+            'image'     => 'required|image|mimes:jpeg,jpg,png|max:2048',
+            'title'     => 'required|min:5',
+            'description'   => 'required|min:10'
         ]);
 
         //upload image
-        
+        $image = $request->file('image');
+        $image->storeAs('public/posts', $image->hashName());
 
         //create post
         Post::create([
-            'image' => $request->image,
-            'title' => $request->title,
-            'description' => $request->description
+            'image'     => $image->hashName(),
+            'title'     => $request->title,
+            'description'   => $request->description
         ]);
 
         //redirect to index
         return redirect()->route('posts.index')->with(['success' => 'Data Berhasil Disimpan!']);
     }
-
+    
     /**
      * show
      *
@@ -85,6 +78,7 @@ class PostController extends Controller
         //render view with post
         return view('posts.show', compact('post'));
     }
+
     /**
      * edit
      *
@@ -99,7 +93,7 @@ class PostController extends Controller
         //render view with post
         return view('posts.edit', compact('post'));
     }
-
+        
     /**
      * update
      *
@@ -111,9 +105,9 @@ class PostController extends Controller
     {
         //validate form
         $this->validate($request, [
-            'image' => 'required',
-            'title' => 'required|min:5',
-            'description' => 'required|min:10'
+            'image'     => 'image|mimes:jpeg,jpg,png|max:2048',
+            'title'     => 'required|min:5',
+            'description'   => 'required|min:10'
         ]);
 
         //get post by ID
@@ -122,20 +116,26 @@ class PostController extends Controller
         //check if image is uploaded
         if ($request->hasFile('image')) {
 
+            //upload new image
+            $image = $request->file('image');
+            $image->storeAs('public/posts', $image->hashName());
+
+            //delete old image
+            Storage::delete('public/posts/'.$post->image);
 
             //update post with new image
             $post->update([
-                'image' => $request->image,
-                'title' => $request->title,
-                'description' => $request->description
+                'image'     => $image->hashName(),
+                'title'     => $request->title,
+                'description'   => $request->description
             ]);
 
         } else {
 
             //update post without image
             $post->update([
-                'title' => $request->title,
-                'description' => $request->description
+                'title'     => $request->title,
+                'description'   => $request->description
             ]);
         }
 
@@ -153,6 +153,9 @@ class PostController extends Controller
     {
         //get post by ID
         $post = Post::findOrFail($id);
+
+        //delete image
+        Storage::delete('public/posts/'. $post->image);
 
         //delete post
         $post->delete();

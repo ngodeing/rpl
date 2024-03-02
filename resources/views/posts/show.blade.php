@@ -14,7 +14,7 @@
         <div class="col-md-8">
             <div class="card border-0 shadow-sm rounded">
                 <div class="card-body">
-                    <img src="{{$post->image}}"class="w-100 rounded">
+                    <img src="{{ asset('/storage/posts/'.$post->image) }}"class="w-100 rounded">
                     <hr>
                     <h4>{{ $post->title }}</h4>
                     <p class="mt-3">{!! $post->description !!}</p>
@@ -31,16 +31,16 @@
                             @endif
                             <div class="mt-2">
                                 <!-- Edit Comment Form -->
-                                <button type="button" class="btn btn-sm btn-primary" onclick="toggleUpdateForm()">Update</button>
+                                <button type="button" class="btn btn-sm btn-primary" onclick="toggleUpdateForm({{ $comment->id }})">Update</button>
 
-                                <form id="updateForm" action="{{ route('comments.update', $comment->id) }}" method="POST" class="d-none">
+                                <form id="updateForm-{{ $comment->id }}" action="{{ route('comments.update', $comment->id) }}" method="POST" class="d-none">
                                     @csrf
                                     @method('PUT')
                                     <div class="form-group">
                                         <textarea class="form-control" name="content" rows="2" required>{{ $comment->content }}</textarea>
                                     </div>
                                     <button type="submit" class="btn btn-sm btn-primary">Save</button>
-                                    <button type="button" class="btn btn-sm btn-secondary ml-2" onclick="toggleUpdateForm()">Cancel</button>
+                                    <button type="button" class="btn btn-sm btn-secondary ml-2" onclick="toggleUpdateForm({{ $comment->id }})">Cancel</button>
                                 </form>
                                 
                                 <!-- Delete Comment Form -->
@@ -89,9 +89,9 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.ckeditor.com/4.13.1/standard/ckeditor.js"></script>
 <script>
-    function toggleUpdateForm() {
-        const updateForm = document.getElementById('updateForm');
-        updateForm.classList.toggle('d-none');
+    function toggleUpdateForm(commentId) {
+        var updateForm = document.getElementById('updateForm-' + commentId);
+        updateForm.classList.toggle('d-none'); // Toggle visibility of the update form
     }
 </script>
 </body>
